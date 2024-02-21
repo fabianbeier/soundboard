@@ -101,14 +101,36 @@ document.addEventListener("DOMContentLoaded", function () {
           };
 
           slider.oninput = function () {
+            const newSource = audioItem.dataset.audioSource;
+            const stopFunction = audioItem.dataset.stopFunction;
+
             if (this.value > 0) {
+              if (!newSource) {
+                // Create a new audio source if it doesn't exist
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.loop = true;
+                const gainNode = audioContext.createGain();
+                source.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                source.start();
+                // Store the new source and its stop function in the dataset
+                audioItem.dataset.audioSource = source;
+                audioItem.dataset.stopFunction = function () {
+                  source.stop();
+                };
+              }
               // add active class to audio item
               audioItem.classList.add("active");
-              source.start();
             } else {
               // remove active class from audio item
               audioItem.classList.remove("active");
-              source.stop();
+              // Stop the audio if it's playing
+              if (stopFunction) {
+                stopFunction();
+                delete audioItem.dataset.audioSource;
+                delete audioItem.dataset.stopFunction;
+              }
             }
           };
 
