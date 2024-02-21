@@ -1,0 +1,34 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const audioFiles = ['audio1.mp3', 'audio2.mp3']; // List your audio file names here
+    const audioList = document.getElementById('audioList');
+
+    audioFiles.forEach((file, index) => {
+        const audioItem = document.createElement('div');
+        audioItem.classList.add('audio-item');
+
+        const audio = new Audio(`path/to/your/audio/folder/${file}`);
+        audio.id = `audio-${index}`;
+        audio.loop = true;
+
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.min = 0;
+        slider.max = 1;
+        slider.step = 0.01;
+        slider.value = 0;
+        slider.classList.add('slider');
+
+        slider.oninput = function() {
+            audio.volume = this.value;
+            if (this.value > 0) {
+                if (audio.paused) audio.play();
+            } else {
+                audio.pause();
+            }
+        };
+
+        audioItem.appendChild(audio);
+        audioItem.appendChild(slider);
+        audioList.appendChild(audioItem);
+    });
+});
